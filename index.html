@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SchoolAttend Pro - Sistem Absensi Terpadu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e3f2fd;
+        }
+
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            margin-right: 15px;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1565C0;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: #555;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .nav-icon {
+            margin-right: 12px;
+            font-size: 18px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1565C0;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.8);
+            color: #555;
+            border: 1px solid #ddd;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .stat-icon.students { background: linear-gradient(45deg, #4CAF50, #45a049); }
+        .stat-icon.teachers { background: linear-gradient(45deg, #FF9800, #f57c00); }
+        .stat-icon.present { background: linear-gradient(45deg, #2196F3, #1976d2); }
+        .stat-icon.absent { background: linear-gradient(45deg, #f44336, #d32f2f); }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .stat-trend {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .trend-up { background: #e8f5e8; color: #4CAF50; }
+        .trend-down { background: #ffebee; color: #f44336; }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Attendance Methods */
+        .attendance-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .method-card {
+            background: rgba(247, 250, 255, 0.8);
+            border: 2px solid #e3f2fd;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .method-card:hover {
+            border-color: #2196F3;
+            background: rgba(33, 150, 243, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .method-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #2196F3;
+        }
+
+        .method-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* Recent Activity */
+        .activity-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .activity-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .activity-info {
+            flex: 1;
+        }
+
+        .activity-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 3px;
+        }
+
+        .activity-detail {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .activity-time {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-present { background: #e8f5e8; color: #4CAF50; }
+        .status-late { background: #fff3e0; color: #FF9800; }
+        .status-absent { background: #ffebee; color: #f44336; }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #e3f2fd;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .action-btn:hover {
+            border-color: #2196F3;
+            background: rgba(33, 150, 243, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .action-icon {
+            font-size: 24px;
+            color: #2196F3;
+            margin-bottom: 10px;
+        }
+
+        .action-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .action-desc {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Alert Notifications */
+        .alerts-section {
+            margin-top: 30px;
+        }
+
+        .alert {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #FF9800;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .alert-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .alert-title {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .alert-time {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .alert-message {
+            color: #555;
+            font-size: 14px;
+        }
+
+        /* User Profile */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">📚</div>
+                <div class="logo-text">SchoolAttend Pro</div>
+            </div>
+            
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active">
+                            <span class="nav-icon">📊</span>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon">✅</span>
+                            Absensi Real-time
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon">👥</span>
+                            Manajemen Siswa
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon">👨‍🏫</span>
+                            Manajemen Guru
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon">📅</span>
+                            Jadwal & Shift
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon">📍</span>
+                            Lokasi Absensi
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon">📊</span>
+                            Laporan & Analytics
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon">🔔</span>
+                            Notifikasi & Alert
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon">📋</span>
+                            Izin & Verifikasi
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon">📁</span>
+                            Import Data
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon">⚙️</span>
+                            Pengaturan
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <span class="nav-icon">🔐</span>
+                            Keamanan & Audit
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <div>
+                    <h1 class="header-title">Dashboard Overview</h1>
+                    <p style="color: #666; margin-top: 5px;">Senin, 11 Juni 2025 - 08:45 WIB</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-secondary">
+                        <span>📄</span>
+                        Export Laporan
+                    </button>
+                    <button class="btn btn-primary">
+                        <span>➕</span>
+                        Absensi Manual
+                    </button>
+                    <div class="user-profile">
+                        <div class="user-avatar">AD</div>
+                        <div class="user-info">
+                            <div class="user-name">Admin Sekolah</div>
+                            <div class="user-role">Super Administrator</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Stats Cards -->
+            <section class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon students">👥</div>
+                        <div class="stat-trend trend-up">↗ +5.2%</div>
+                    </div>
+                    <div class="stat-value">1,247</div>
+                    <div class="stat-label">Total Siswa Aktif</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon teachers">👨‍🏫</div>
+                        <div class="stat-trend trend-up">↗ +2.1%</div>
+                    </div>
+                    <div class="stat-value">89</div>
+                    <div class="stat-label">Guru & Staff</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon present">✅</div>
+                        <div class="stat-trend trend-up">↗ +12.5%</div>
+                    </div>
+                    <div class="stat-value">94.2%</div>
+                    <div class="stat-label">Kehadiran Hari Ini</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon absent">❌</div>
+                        <div class="stat-trend trend-down">↘ -3.8%</div>
+                    </div>
+                    <div class="stat-value">72</div>
+                    <div class="stat-label">Siswa Tidak Hadir</div>
+                </div>
+            </section>
+
+            <!-- Content Grid -->
+            <section class="content-grid">
+                <!-- Attendance Methods -->
+                <div class="card">
+                    <h2 class="card-title">
+                        <span>🎯</span>
+                        Metode Absensi Tersedia
+                    </h2>
+                    <div class="attendance-methods">
+                        <div class="method-card">
+                            <div class="method-icon">📱</div>
+                            <div class="method-name">Mobile App</div>
+                        </div>
+                        <div class="method-card">
+                            <div class="method-icon">🌐</div>
+                            <div class="method-name">Web Login</div>
+                        </div>
+                        <div class="method-card">
+                            <div class="method-icon">📱</div>
+                            <div class="method-name">QR Code</div>
+                        </div>
+                        <div class="method-card">
+                            <div class="method-icon">💳</div>
+                            <div class="method-name">RFID Card</div>
+                        </div>
+                        <div class="method-card">
+                            <div class="method-icon">👆</div>
+                            <div class="method-name">Fingerprint</div>
+                        </div>
+                        <div class="method-card">
+                            <div class="method-icon">📍</div>
+                            <div class="method-name">Geofencing</div>
+                        </div>
+                    </div>
+                    
+                    <h3 style="margin: 20px 0 15px 0; color: #333;">Aktivitas Absensi Terbaru</h3>
+                    <div class="activity-list">
+                        <div class="activity-item">
+                            <div class="activity-avatar">AS</div>
+                            <div class="activity-info">
+                                <div class="activity-name">Andi Setiawan - XI IPA 2</div>
+                                <div class="activity-detail">Absen masuk via Mobile App</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div class="status-badge status-present">Hadir</div>
+                                <div class="activity-time">08:42 WIB</div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-avatar">SR</div>
+                            <div class="activity-info">
+                                <div class="activity-name">Siti Rahayu - X IPS 1</div>
+                                <div class="activity-detail">Absen via QR Code</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div class="status-badge status-late">Terlambat</div>
+                                <div class="activity-time">08:15 WIB</div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-avatar">BP</div>
+                            <div class="activity-info">
+                                <div class="activity-name">Bu Permata - Guru Matematika</div>
+                                <div class="activity-detail">Check-in via Fingerprint</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div class="status-badge status-present">Hadir</div>
+                                <div class="activity-time">07:45 WIB</div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="activity-avatar">DA</div>
+                            <div class="activity-info">
+                                <div class="activity-name">Deni Ardiansyah - XII IPA 1</div>
+                                <div class="activity-detail">Belum absen - Auto reminder sent</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div class="status-badge status-absent">Belum Absen</div>
+                                <div class="activity-time">-</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="card">
+                    <h2 class="card-title">
+                        <span>⚡</span>
+                        Quick Actions
+                    </h2>
+                    <div class="quick-actions">
+                        <a href="#" class="action-btn">
+                            <div class="action-icon">📊</div>
+                            <div class="action-title">Rekap Harian</div>
+                            <div class="action-desc">Lihat laporan kehadiran hari ini</div>
+                        </a>
+                        
+                        <a href="#" class="action-btn">
+                            <div class="action-icon">📝</div>
+                            <div class="action-title">Verifikasi Izin</div>
+                            <div class="action-desc">5 pengajuan izin menunggu</div>
+                        </a>
+                        
+                        <a href="#" class="action-btn">
+                            <div class="action-icon">⚠️</div>
+                            <div class="action-title">Alert Management</div>
+                            <div class="action-desc">3 alert memerlukan tindakan</div>
+                        </a>
+                        
+                        <a href="#" class="action-btn">
+                            <div class="action-icon">📁</div>
+                            <div class="action-title">Import Data</div>
+                            <div class="action-desc">Upload file Excel/CSV</div>
+                        </a>
+                        
+                        <a href="#" class="action-btn">
+                            <div class="action-icon">🔧</div>
+                            <div class="action-title">Atur Jadwal</div>
+                            <div class="action-desc">Kelola jadwal & shift</div>
+                        </a>
+                        
+                        <a href="#" class="action-btn">
+                            <div class="action-icon">📱</div>
+                            <div class="action-title">Generate QR</div>
+                            <div class="action-desc">Buat QR code untuk kelas</div>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Alerts Section -->
+            <section class="alerts-section">
+                <div class="card">
+                    <h2 class="card-title">
+                        <span>🚨</span>
+                        Notifikasi & Peringatan Sistem
+                    </h2>
+                    
+                    <div class="alert">
+                        <div class="alert-header">
+                            <div class="alert-title">⚠️ Keterlambatan Massal Terdeteksi</div>
+                            <div class="alert-time">2 menit lalu</div>
+                        </div>
+                        <div class="alert-message">
+                            15 siswa kelas XI IPA 3 terlambat lebih dari 15 menit. Kemungkinan ada kendala transportasi atau jadwal yang berubah.
+                        </div>
+                    </div>
+                    
+                    <div class="alert">
+                        <div class="alert-header">
+                            <div class="alert-title">📍 Anomali Lokasi Absensi</div>
+                            <div class="alert-time">5 menit lalu</div>
+                        </div>
+                        <div class="alert-message">
+                            Siswa "Rina Sari" mencoba absen dari lokasi di luar radius geofencing. Memerlukan verifikasi manual.
+                        </div>
+                    </div>
+                    
+                    <div class="alert">
+                        <div class="alert-header">
+                            <div class="alert-title">📱 Notifikasi Orang Tua Terkirim</div>
+                            <div class="alert-time">10 menit lalu</div>
+                        </div>
+                        <div class="alert-message">
+                            WhatsApp notification berhasil dikirim ke 23 orang tua siswa yang belum hadir hingga jam 08:30 WIB.
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Simple interactive features
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate cards on load
+            const cards = document.querySelectorAll('.stat-card, .card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+
+            // Add click handlers for method cards
+            const methodCards = document.querySelectorAll('.method-card');
+            methodCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Remove active class from all cards
+                    methodCards.forEach(c => c.classList.remove('active'));
+                    // Add active class to clicked card
+                    this.classList.add('active');
+                    
+                    // Simple feedback
+                    const methodName = this.querySelector('.method-name').textContent;
+                    console.log(`Selected attendance method: ${methodName}`);
+                });
+            });
+
+            // Add click handlers for action buttons
+            const actionBtns = document.querySelectorAll('.action-btn');
+            actionBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const actionTitle = this.querySelector('.action-title').textContent;
+                    console.log(`Quick action clicked: ${actionTitle}`);
+                    
+                    // Add click animation
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                });
+            });
+
+            // Update time every minute
+            function updateTime() {
+                const now = new Date();
+                const options = { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    timeZone: 'Asia/Jakarta'
+                };
+                const timeString = now.toLocaleDateString('id-ID', options) + ' WIB';
+                const timeElement = document.querySelector('.header p');
+                if (timeElement) {
