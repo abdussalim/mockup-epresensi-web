@@ -9,7 +9,7 @@ const Notifications: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [formData, setFormData] = useState({
-    type: 'ATTENDANCE' as keyof typeof NOTIFICATION_TYPE,
+    type: 'attendance' as keyof typeof NOTIFICATION_TYPE,
     recipient: '',
     message: '',
   });
@@ -19,7 +19,7 @@ const Notifications: React.FC = () => {
     if (formData.recipient && formData.message) {
       const newNotification: Notification = {
         id: Date.now().toString(),
-        type: formData?.type,
+        type: formData.type.toLowerCase() as 'attendance' | 'permission' | 'system',
         recipient: formData.recipient,
         message: formData.message,
         sentTime: new Date().toLocaleTimeString('id-ID'),

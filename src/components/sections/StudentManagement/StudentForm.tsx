@@ -9,12 +9,18 @@ interface StudentFormProps {
 }
 
 const StudentForm: React.FC<StudentFormProps> = ({ student, onSubmit, onCancel }) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    nis: string;
+    class: string;
+    email: string;
+    status: 'active' | 'inactive';
+  }>({
     name: '',
     nis: '',
     class: '',
     email: '',
-    status: 'active' as const,
+    status: 'active',
   });
 
   const [errors, setErrors] = useState<Partial<Record<keyof typeof formData, string>>>({});
